@@ -11,8 +11,12 @@ Tarea 1 Sistemas Operativos (Parte I)
 - **sysproc.c** → contiene la implementación de llamadas
   - agregamos `getppid()`.
   ```c
-  int sys_getppid(void) {
-      return myproc()->parent->pid;  // devuelve el puntero actual, apunta al proceso padre, identificador del proceso
+    uint64
+    sys_getppid(void)
+    {
+      struct proc *p =myproc();
+      return p->  parent -> pid;
+    } // devuelve el puntero actual, apunta al proceso padre, identificador del proceso
   }
   ```
 
