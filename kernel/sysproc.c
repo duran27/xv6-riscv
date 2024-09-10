@@ -98,5 +98,6 @@ sys_uptime(void)
 uint64
 sys_getppid(void)
 {
-  return myproc() -> parent -> pid;
+  struct proc *p =myproc();
+  return p->  parent -> pid;
 }

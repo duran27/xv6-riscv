@@ -1,3 +1,5 @@
+typedef unsigned int uint;
+
 struct stat;
 
 // system calls
