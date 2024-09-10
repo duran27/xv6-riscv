@@ -36,10 +36,29 @@ Tarea 1 Sistemas Operativos (Parte I)
     ```c
     int getppid(void);
     ```
+- **usys.pl** 
+  - agregamos:
+    ```c
+    entry("getppid");
+    ```
+- **yosoytupadre.c**
+  -agregamos programa de prueba:
+    ```c
+	#include "user.h"
+
+	int
+	main(void)
+	{
+    		int ppid = getppid();   // Llama a la función que acabas de implementar
+    		printf("PID del padre: %d\n", ppid);
+    		exit(0);
+	}
+    ```
 
 
 ## Dificultades encontradas
 <p style="text-align: justify;">Encontré una dificultad a la hora compilar el código luego de haber realizado las modificaciones para la implementación. La verdad si bien entendía el error que me mostraba por consola no pude resolverlo.
 Lo que hice fue crear otra rama de mi Fork y volver a realizar los pasos, el único cambio que realicé con respecto a mi iteración anterior fue que el numero de proceso que le asigné a esta nueva llamada fue el 25, el cual lo elegí de manera arbitraria.
 Finalmente, vovlí a compilar y ejecutar xv6 sin problemas y realizar las pruebas.</p>
+
 
