@@ -49,14 +49,16 @@ Tarea 1 Sistemas Operativos (Parte I)
   -agregamos programa de prueba:
     ```c
 	#include "user.h"
+    #include "kernel/stat.h"
+    #include "kernel/types.h"
 
-	int
-	main(void)
-	{
-    		int ppid = getppid();   // Llama a la función que acabas de implementar
-    		printf("PID del padre: %d\n", ppid);
-    		exit(0);
-	}
+
+    int main(void)
+    {
+    
+        printf("Yo soy tu padre - dijo el proceso: %i\n", getppid());
+        exit(0);
+    }
     ```
 
 
