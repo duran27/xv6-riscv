@@ -168,6 +168,8 @@ freeproc(struct proc *p)
   p->chan = 0;
   p->killed = 0;
   p->xstate = 0;
+  p->prioridad = 0;      //inicializamos prioridad en 0
+  p->boost = 1;          //inicializamos boost en 1 
   p->state = UNUSED;
 }
 
@@ -448,37 +450,62 @@ scheduler(void)
   struct cpu *c = mycpu();
 
   c->proc = 0;
-  for(;;){
+  for(;;) {
     // The most recent process to run may have had interrupts
     // turned off; enable them to avoid a deadlock if all
     // processes are waiting.
     intr_on();
 
-    int found = 0;
+    // Recorremos la lista de procesos
     for(p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
+      
       if(p->state == RUNNABLE) {
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
-        p->state = RUNNING;
-        c->proc = p;
-        swtch(&c->context, &p->context);
-
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
-        found = 1;
+        // Aumentamos o disminuimos la prioridad según el boost
+        p->prioridad += p->boost;
+        if(p->prioridad >= 9) {
+          p->boost = -1;
+        }
+        if(p->prioridad <= 0) {
+          p->boost = 1;
+        }
       }
+
       release(&p->lock);
     }
-    if(found == 0) {
-      // nothing to run; stop running on this core until an interrupt.
+
+    struct proc *chosen_proc = 0;
+    int highest_priority = 10;
+
+    // Seleccionamos el proceso con la mayor prioridad (menor valor numérico)
+    for(p = proc; p < &proc[NPROC]; p++) {
+      acquire(&p->lock);
+      if(p->state == RUNNABLE && p->prioridad < highest_priority) {
+        highest_priority = p->prioridad;
+        chosen_proc = p;
+      }
+      release(&p->lock);  // Aquí había un error, tenía ':' en lugar de ';'
+    }
+
+    if(chosen_proc != 0) {
+      acquire(&chosen_proc->lock);
+      chosen_proc->state = RUNNING;
+      c->proc = chosen_proc;
+      
+      // Hacemos el cambio de contexto con swtch()
+      swtch(&c->context, &chosen_proc->context);
+      
+      // Proceso listo para correr
+      c->proc = 0;
+      release(&chosen_proc->lock);  // Aquí faltaba ';'
+    } else {
+      // Si no hay procesos ejecutables, esperar interrupción
       intr_on();
       asm volatile("wfi");
     }
   }
 }
+
 
 // Switch to scheduler.  Must hold only p->lock
 // and have changed proc->state. Saves and restores
