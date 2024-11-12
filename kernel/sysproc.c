@@ -6,6 +6,9 @@
 #include "spinlock.h"
 #include "proc.h"
 
+int mprotect(void *addr, int len);
+int munprotect(void *addr, int len);
+
 uint64
 sys_exit(void)
 {
@@ -90,4 +93,21 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+
+uint64 sys_mprotect(void) {
+    uint64 *addr;
+    int len;
+    if (argaddr(0, (uint64*)&addr) < 0 || argint(1, &len) < 0)
+        return -1;
+    return mprotect(addr, len);
+}
+
+uint64 sys_munprotect(void) {
+    uint64 *addr;
+    int len;
+    if (argaddr(0, (uint64*)&addr) < 0 || argint(1, &len) < 0)
+        return -1;
+    return munprotect(addr, len);
 }

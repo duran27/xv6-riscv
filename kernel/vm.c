@@ -449,3 +449,29 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
     return -1;
   }
 }
+
+int mprotect(void *addr, int len) {
+    // Obtiene el índice inicial de la página
+    uint64 start_addr = (uint64) addr;
+    uint64 end_addr = start_addr + len;
+    
+    for (uint64 a = start_addr; a < end_addr; a += PGSIZE) {
+        pte_t *pte = walkpgdir(myproc()->pagetable, a, 0);
+        if (pte == 0) return -1;  // Error si la página no existe
+        *pte &= ~PTE_W;           // Deshabilitar el bit de escritura
+    }
+    return 0;  // Éxito
+}
+
+
+int munprotect(void *addr, int len) {
+    uint64 start_addr = (uint64) addr;
+    uint64 end_addr = start_addr + len;
+
+    for (uint64 a = start_addr; a < end_addr; a += PGSIZE) {
+        pte_t *pte = walkpgdir(myproc()->pagetable, a, 0);
+        if (pte == 0) return -1;  // Error si la página no existe
+        *pte |= PTE_W;            // Habilitar el bit de escritura
+    }
+    return 0;  // Éxito
+}
