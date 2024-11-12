@@ -119,21 +119,11 @@ int mprotect(uint64 addr, int len);
 int munprotect(uint64 addr, int len);
 ```
 
----
 
-## Paso 5: Validación de parámetros en `proc.c`
-
-Para asegurar que `addr` y `len` sean válidos, hacemos verificaciones en las funciones `sys_mprotect` y `sys_munprotect` en `sysproc.c`. Estas verificaciones incluyen confirmar que `addr` esté alineada a una página y que esté dentro del espacio de direcciones del proceso.
-
-**Ejemplo:**
-
-```c
-
-```
 
 ---
 
-## Paso 6: Adición de `mprotect` y `munprotect` en `usys.S`
+## Paso 5: Adición de `mprotect` y `munprotect` en `usys.S`
 
 Para hacer que estas syscalls estén disponibles en el espacio de usuario, agregamos las entradas en `usys.S` para `mprotect` y `munprotect`.
 
@@ -154,7 +144,7 @@ munprotect:
 ```
 
 
-## Paso 7: Adición de programa de prueba `mprotect_test.c` 
+## Paso 6: Adición de programa de prueba `mprotect_test.c` 
 
 
 
@@ -183,7 +173,7 @@ int main() {
 
 ```
 
-## Paso 8: Cambio en archivo MAKEFILE para agregar el programa de prueba y poder vovler a compilar.
+## Paso 7: Cambio en archivo MAKEFILE para agregar el programa de prueba y poder vovler a compilar.
 
 ```
 UPROGS=\
@@ -192,7 +182,7 @@ UPROGS=\
     ...
     _mprotect_test\
 ```
-## Paso 9: Compilamos
+## Paso 8: Compilamos
 
 ```
 make clean
