@@ -1,6 +1,6 @@
-##Nicolas Durán R 
+## Nicolas Durán R 
 
-##Implementación de `mprotect` y `munprotect` en xv6
+## Implementación de `mprotect` y `munprotect` en xv6
 
 Este informe detalla los pasos para agregar las syscalls `mprotect` y `munprotect` en el sistema operativo xv6, con el objetivo de permitir que los procesos puedan proteger y desproteger regiones de memoria.
 
