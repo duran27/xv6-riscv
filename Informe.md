@@ -153,5 +153,47 @@ munprotect:
 ```
 
 
+## Paso 7: Adición de programa de prueba `mprotect_test.c` 
 
 
+
+```c
+#include "types.h"
+#include "stat.h"
+#include "user.h"
+
+int main() {
+    char *addr = sbrk(0);  // Obtener la dirección actual del heap
+    sbrk(4096);  // Reservar una página
+
+    // Intentar proteger la nueva página
+    if (mprotect(addr, 1) == -1) {
+        printf("mprotect falló\n");
+    }
+
+    // Intentar escribir en la página protegida
+    char *ptr = addr;
+    *ptr = 'A';  // Esto debería fallar si la protección es exitosa
+    printf("Valor en la dirección: %c\n", *ptr);  // Verificar el valor
+
+    return 0;
+}
+
+
+```
+
+## Paso 8: Cambio en archivo MAKEFILE para agregar el programa de prueba y poder vovler a compilar.
+
+```
+UPROGS=\
+    _cat\
+    _echo\
+    ...
+    _mprotect_test\
+```
+## Paso 9: Compilamos
+
+```
+make clean
+make qemu
+```
