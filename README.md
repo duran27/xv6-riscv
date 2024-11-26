@@ -13,3 +13,4 @@ Primera Parte: Modificación de la estructura de inode
 };
 '''´´´
 ´´´
+ok
