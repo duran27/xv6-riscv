@@ -12,7 +12,6 @@ I: Modificación de la estructura de inode
     };
 
 2.Inicializar el valor de perm en ialloc:
-
     Edita fs.c en la función ialloc para que inicialice el nuevo campo perm en 3 al crear un nuevo archivo.
 
     ip->perm = 3; // Inicializar con permisos de lectura/escritura
@@ -21,7 +20,6 @@ I: Modificación de la estructura de inode
 II: Modificar las operaciones de apertura, lectura y escritura
 
 1.Validar permisos en sys_open (archivo sysfile.c):
-
     Editamos la función sys_open para verificar que los permisos definidos en el inode coincidan con el modo de apertura (omode).
     Ahora devuelve un error si el archivo se abre en un modo no permitido.
 
