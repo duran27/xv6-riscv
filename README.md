@@ -1,9 +1,9 @@
-*Nicolás Durán R
-**Tarea 4
+#Nicolás Durán R
+##Tarea 4
 
 
 
-I: Modificación de la estructura de inode
+###I: Modificación de la estructura de inode
 
 1.Editar inode en fs.h:
     Abrimos el archivo fs.h.
@@ -22,7 +22,7 @@ I: Modificación de la estructura de inode
     ip->perm = 3; // Inicializar con permisos de lectura/escritura
 
 
-II: Modificar las operaciones de apertura, lectura y escritura
+###II: Modificar las operaciones de apertura, lectura y escritura
 
 1.Validar permisos en sys_open (archivo sysfile.c):
     Editamos la función sys_open para verificar que los permisos definidos en el inode coincidan con el modo de apertura (omode).
@@ -50,7 +50,7 @@ Cambios en sys_open:
         return -1; // Error: No se permiten escrituras
     }
 
-III: Crear la llamada al sistema chmod
+###III: Crear la llamada al sistema chmod
 
 1. Declarar chmod en syscall.h:
     agregamos un prototipo para chmod:
@@ -96,3 +96,6 @@ en syscall.c:
             return -1;
         return chmod(path, mode);
     }
+
+
+###IV: 
