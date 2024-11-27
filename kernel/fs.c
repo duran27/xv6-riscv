@@ -472,11 +472,15 @@ stati(struct inode *ip, struct stat *st)
 // Caller must hold ip->lock.
 // If user_dst==1, then dst is a user virtual address;
 // otherwise, dst is a kernel address.
-int
-readi(struct inode *ip, int user_dst, uint64 dst, uint off, uint n)
+int readi(struct inode *ip, int user_dst, uint64 dst, uint off, uint n)    //readi modificado (permissions)
 {
   uint tot, m;
   struct buf *bp;
+
+  // Verificar permisos de lectura
+  if(!(ip->permissions & 1)) {
+    return -1; // No tiene permiso de lectura
+  }
 
   if(off > ip->size || off + n < off)
     return 0;
@@ -499,6 +503,7 @@ readi(struct inode *ip, int user_dst, uint64 dst, uint off, uint n)
   return tot;
 }
 
+
 // Write data to inode.
 // Caller must hold ip->lock.
 // If user_src==1, then src is a user virtual address;
@@ -506,11 +511,17 @@ readi(struct inode *ip, int user_dst, uint64 dst, uint off, uint n)
 // Returns the number of bytes successfully written.
 // If the return value is less than the requested n,
 // there was an error of some kind.
-int
-writei(struct inode *ip, int user_src, uint64 src, uint off, uint n)
+
+
+int writei(struct inode *ip, int user_src, uint64 src, uint off, uint n)      //writei modificado (permissions)
 {
   uint tot, m;
   struct buf *bp;
+
+  // Verificar permisos de escritura
+  if(!(ip->permissions & 2)) {
+    return -1; // No tiene permiso de escritura
+  }
 
   if(off > ip->size || off + n < off)
     return -1;
@@ -541,6 +552,13 @@ writei(struct inode *ip, int user_src, uint64 src, uint off, uint n)
 
   return tot;
 }
+// Write data to inode.
+// Caller must hold ip->lock.
+// If user_src==1, then src is a user virtual address;
+// otherwise, src is a kernel address.
+// Returns the number of bytes successfully written.
+// If the return value is less than the requested n,
+// there was an error of some kind.
 
 // Directories
 

@@ -185,6 +185,14 @@ isdirempty(struct inode *dp)
   return 1;
 }
 
+
+
+
+
+
+
+
+
 uint64
 sys_unlink(void)
 {
@@ -514,4 +522,32 @@ sys_pipe(void)
     return -1;
   }
   return 0;
+}
+
+//implementamos funcion sys_chmod
+
+uint64
+sys_chmod(void) {
+  char path[MAXPATH];
+  int mode;
+  struct inode *ip;
+
+  if(argstr(0, path, MAXPATH) < 0 || argint(1, &mode) < 0)
+  return -1;
+  
+  begin_op();
+  if((ip=namei(path))==0){
+    end_op();
+    return -1;
+  }
+
+  ilock(ip);
+  ip->permissions = mode;
+  iupdate(ip);   //actualiza inode en el disco
+  iunlockput(ip);
+  end_op();
+
+  return 0;
+
+
 }
