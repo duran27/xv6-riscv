@@ -1,7 +1,7 @@
 #Nicolás Durán R
 ##Tarea 4
 
-
+#1RA PARTE#
 
 ###I: Modificación de la estructura de inode
 
@@ -98,4 +98,54 @@ en syscall.c:
     }
 
 
-###IV: 
+###IV: Creación de pruebas (crear un programa que cree un archivo y cambie sus permisos)
+
+chmodPRUEBA.c
+
+#include "types.h"
+    #include "stat.h"
+    #include "user.h"
+    #include "fcntl.h"
+
+    int main() {
+        int fd;
+        char *filename = "testfile";
+
+        // Crear archivo y escribir en él
+        fd = open(filename, O_CREATE | O_RDWR);
+        write(fd, "Hola, mundo!\n", 13);
+        close(fd);
+
+        // Cambiar permisos a solo lectura
+        chmod(filename, 1);
+
+        // Intentar abrir en modo escritura
+        fd = open(filename, O_WRONLY);
+        if (fd < 0) {
+            printf("Prueba exitosa: Escritura bloqueada\n");
+        } else {
+            printf("Prueba fallida: Escritura permitida\n");
+            close(fd);
+        }
+
+        // Restaurar permisos
+        chmod(filename, 3);
+
+        // Escribir de nuevo
+        fd = open(filename, O_RDWR);
+        write(fd, "Escritura restaurada\n", 21);
+        close(fd);
+
+        exit(0);
+    }
+
+Por último debemos compilar y ejecutar el programa de prueba:
+
+    para ello agregamos chmodPRUEBA al Makefile .
+    Ejecutamos el programa en xv6 y verifica los resultados.
+
+
+########################
+
+#2DA PARTE#
+

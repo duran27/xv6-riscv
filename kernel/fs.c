@@ -208,6 +208,7 @@ ialloc(uint dev, short type)
     if(dip->type == 0){  // a free inode
       memset(dip, 0, sizeof(*dip));
       dip->type = type;
+      dip->permissions = 3;                                     //modificamos IALLOC, inicializamos permisisons con  valor predet. = 3
       log_write(bp);   // mark it allocated on the disk
       brelse(bp);
       return iget(dev, inum);
@@ -236,6 +237,7 @@ iupdate(struct inode *ip)
   dip->nlink = ip->nlink;
   dip->size = ip->size;
   memmove(dip->addrs, ip->addrs, sizeof(ip->addrs));
+  dip->permissions = ip->permissions;                          //agregamos para sincronizar inode (memoria) con dinode(disco)
   log_write(bp);
   brelse(bp);
 }
@@ -309,6 +311,8 @@ ilock(struct inode *ip)
     ip->nlink = dip->nlink;
     ip->size = dip->size;
     memmove(ip->addrs, dip->addrs, sizeof(ip->addrs));
+    ip->permissions = dip->permissions;            //agregamos para cargar permissions del dinode
+
     brelse(bp);
     ip->valid = 1;
     if(ip->type == 0)
