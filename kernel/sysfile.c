@@ -343,7 +343,7 @@ sys_open(void)
     }
     
     // Verificar permisos
-    if((omode & O_WRONLY) && !(ip->permissions & 2)) {
+    if((omode & O_WRONLY) && !(ip->permissions & 2) || ip->permissions ==5) {   //cambios para 2da parte
       iunlockput(ip);
       end_op();
       return -1; // No tiene permiso de escritura
@@ -542,6 +542,15 @@ sys_chmod(void) {
   }
 
   ilock(ip);
+
+  //verificamos si el archivo es inmutable
+  if(ip->permissions == 5){
+    iunlockput(ip);
+    end_op();
+    return -1;
+  }
+
+
   ip->permissions = mode;
   iupdate(ip);   //actualiza inode en el disco
   iunlockput(ip);

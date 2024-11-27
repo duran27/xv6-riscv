@@ -519,8 +519,8 @@ int writei(struct inode *ip, int user_src, uint64 src, uint off, uint n)      //
   struct buf *bp;
 
   // Verificar permisos de escritura
-  if(!(ip->permissions & 2)) {
-    return -1; // No tiene permiso de escritura
+  if(!(ip->permissions & 2) || ip->permissions ==5) {
+    return -1; // No tiene permiso de escritura O ES INMUTABLE
   }
 
   if(off > ip->size || off + n < off)
