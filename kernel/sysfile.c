@@ -333,6 +333,18 @@ sys_open(void)
       end_op();
       return -1;
     }
+    
+    // Verificar permisos
+    if((omode & O_WRONLY) && !(ip->permissions & 2)) {
+      iunlockput(ip);
+      end_op();
+      return -1; // No tiene permiso de escritura
+    }
+    if((omode & O_RDONLY) && !(ip->permissions & 1)) {
+      iunlockput(ip);
+      end_op();
+      return -1; // No tiene permiso de lectura
+    }
   }
 
   if(ip->type == T_DEVICE && (ip->major < 0 || ip->major >= NDEV)){
