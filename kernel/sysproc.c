@@ -5,6 +5,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "proc.c"
 
 uint64
 sys_exit(void)
@@ -90,4 +91,68 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+int sys_send(void) {
+    int sender_pid = myproc()->pid; // Obtén el PID del proceso actual
+    char *content;                 // Puntero al contenido del mensaje
+
+    // Obtén el argumento del contenido (pasado desde espacio de usuario)
+    if (argstr(0, (void *)&content) < 0)
+        return -1;
+
+    // Asegúrate de que el contenido no sea NULL
+    if (content == 0)
+        return -1;
+
+    // Protege el acceso a la cola de mensajes
+    acquire(&msg_queue.lock);
+
+    // Verifica si la cola está llena
+    if (msg_queue.size >= MAX_MESSAGES) {
+        release(&msg_queue.lock);
+        return -1; // Retorna error si la cola está llena
+    }
+
+    // Crea el mensaje
+    message msg;
+    msg.sender_pid = sender_pid;
+    safestrcpy(msg.content, content, sizeof(msg.content));
+
+    // Añade el mensaje a la cola
+    msg_queue.messages[msg_queue.tail] = msg;
+    msg_queue.tail = (msg_queue.tail + 1) % MAX_MESSAGES;
+    msg_queue.size++;
+
+    // Despierta a los procesos que podrían estar esperando mensajes
+    wakeup(&msg_queue);
+
+    release(&msg_queue.lock); // Libera el spinlock
+
+    return 0; // Éxito
+}
+
+
+int sys_receive(void) {
+    message *user_msg;  // Puntero al espacio de usuario para almacenar el mensaje
+
+    // Obtiene el puntero del argumento (pasado desde el espacio de usuario)
+    if (argptr(0, (void *)&user_msg, sizeof(message)) < 0)
+        return -1;
+
+    acquire(&msg_queue.lock);  // Protege la cola con un spinlock
+
+    // Si no hay mensajes en la cola, bloquea el proceso hasta que llegue uno
+    while (msg_queue.size == 0) {
+        sleep(&msg_queue, &msg_queue.lock);  // Bloquea el proceso y libera el spinlock
+    }
+
+    // Extrae el mensaje de la cola
+    *user_msg = msg_queue.messages[msg_queue.head];
+    msg_queue.head = (msg_queue.head + 1) % MAX_MESSAGES;
+    msg_queue.size--;
+
+    release(&msg_queue.lock);  // Libera el spinlock
+
+    return 0;  // Éxito
 }

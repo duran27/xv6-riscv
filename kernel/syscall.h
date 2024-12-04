@@ -20,3 +20,10 @@
 #define SYS_link   19
 #define SYS_mkdir  20
 #define SYS_close  21
+#define SYS_send 23 // nuevoo
+#define SYS_receive 24
+
+
+int sys_send(void);
+
+int sys_receive(void);

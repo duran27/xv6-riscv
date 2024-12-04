@@ -105,3 +105,9 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
 };
+
+// Estructura de mensajes para el sistema IPC
+typedef struct message {
+    int sender_pid;       // ID del proceso remitente
+    char content[128];    // Contenido del mensaje
+} message;

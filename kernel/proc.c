@@ -693,3 +693,22 @@ procdump(void)
     printf("\n");
   }
 }
+
+#define MAX_MESSAGES 64
+
+typedef struct message_queue {
+    message messages[MAX_MESSAGES];
+    int head;
+    int tail;
+    int size;
+    struct spinlock lock;
+} message_queue;
+
+message_queue msg_queue;
+
+void init_message_queue(void) {
+    initlock(&msg_queue.lock, "msg_queue");
+    msg_queue.head = 0;
+    msg_queue.tail = 0;
+    msg_queue.size = 0;
+}
